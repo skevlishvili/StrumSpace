@@ -107,6 +107,15 @@ function GuitarString({ position, length = 290, audioPath }) {
     }
   };
 
+  const handleInteraction = () => {
+    set(true);
+    playSound();
+  };
+
+  const handleEndInteraction = () => {
+    set(false);
+  };
+
   return (
     <mesh
       position={position}
@@ -115,6 +124,8 @@ function GuitarString({ position, length = 290, audioPath }) {
         set(true), playSound();
       }}
       onPointerOut={() => set(false)}
+      onTouchStart={handleInteraction}
+      onTouchEnd={handleEndInteraction}
     >
       <boxGeometry args={[0.2, 0.8, length, 10, 10, 300]} />
 
