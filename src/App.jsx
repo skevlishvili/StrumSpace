@@ -71,24 +71,6 @@ function GuitarString({ position, length = 290, audioPath }) {
     };
   }, []);
 
-  useEffect(() => {
-    // Moved the creation of AudioContext to a separate function
-    const initAudioContext = () => {
-      const context = new AudioContext();
-      setAudioContext(context);
-    };
-
-    // Add event listener to initiate AudioContext on user interaction
-    document.addEventListener("touchstart", initAudioContext, { once: true });
-
-    return () => {
-      if (audioContext) {
-        audioContext.close();
-      }
-      document.removeEventListener("touchstart", initAudioContext);
-    };
-  }, []);
-
   useCursor(hovered /*'pointer', 'auto', document.body*/);
 
   const uniforms = useMemo(
