@@ -144,6 +144,7 @@ function App({ ...props }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas camera={{ position: [-200, 0, -100] }}>
+        <color attach="background" args={["#FFCC70"]} />
         <Physics isPaused={true}>
           <CameraControls />
 
