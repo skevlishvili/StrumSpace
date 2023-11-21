@@ -7,7 +7,6 @@ import "./main.css";
 import { useMediaQuery } from "usehooks-ts";
 
 import { Howl, Howler } from "howler";
-import unmuteIosAudio from "unmute-ios-audio";
 
 const fragmentShader = `
 varying vec2 vUv;
@@ -142,10 +141,6 @@ function App({ ...props }) {
 
   const [start, setStart] = useState(false);
   const [lock, setLock] = useState(false);
-
-  useEffect(() => {
-    unmuteIosAudio();
-  }, []);
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
