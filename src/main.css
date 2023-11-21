@@ -1,7 +1,6 @@
 .start-overlay {
   position: absolute;
   z-index: 2;
-  background: white;
   padding: 20px;
   border-radius: 5px;
   display: flex;
@@ -11,19 +10,31 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  font-family: Roboto;
+
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  color: #333;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .start-overlay-button {
   padding: 10px;
   border: none;
-  font-family: Inter;
-  font-weight: 400;
+  font-family: Roboto;
+  font-weight: 500;
   cursor: pointer;
+  background: white;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  transition: box-shadow 0.2s, transform 0.2s;
+  border-radius: 5px;
 }
 
 .start-overlay-button:hover {
   background: #f2f2f2;
-  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
 
 .lock-button {
@@ -31,8 +42,9 @@
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  color: #ffffffb3;
-  border: 3px solid #ffffffb3;
+  color: #ffffffd6;
+  font-weight: bold;
+  border: 3px solid #ffffffd6;
   margin: 10px;
   background: #ffffff08;
   opacity: 1;
@@ -44,4 +56,68 @@
   padding: 20px;
   right: 0;
   z-index: 2;
+
+  font-family: Inter;
+}
+
+.lock-button svg {
+  scale: 1.5;
+}
+
+.mute-warning {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 0, 0.9); /* Yellow background */
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: Roboto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  z-index: 2;
+}
+
+.mute-warning-button {
+  padding: 10px;
+  border: none;
+  font-family: Roboto;
+  font-weight: 500;
+  cursor: pointer;
+  background: white;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  transition: box-shadow 0.2s, transform 0.2s;
+  border-radius: 5px;
+
+  margin-left: 10px;
+}
+
+.mute-warning-button:hover {
+  background: #f2f2f2;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .start-overlay-button {
+    padding: 15px;
+    font-size: 1.2em;
+  }
+
+  .mute-warning {
+    font-size: 1em;
+    padding: 15px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lock-button {
+    font-size: 1em;
+    padding: 15px;
+  }
 }

@@ -6,7 +6,10 @@ import * as THREE from "three";
 import "./main.css";
 import { useMediaQuery } from "usehooks-ts";
 
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
 
 const fragmentShader = `
 varying vec2 vUv;
@@ -63,7 +66,6 @@ function GuitarString({ position, length = 290, audioPath, audioContext }) {
   const sound = new Howl({
     src: [audioPath],
     preload: true,
-    html5: true,
   });
 
   const handleInteraction = () => {
@@ -142,38 +144,21 @@ function App({ ...props }) {
 
   const [start, setStart] = useState(false);
   const [lock, setLock] = useState(false);
-
-  useEffect(() => {
-    // Check if the unmute function is available
-    setTimeout(() => {
-      // Create an audio context instance if WebAudio is supported
-      let context =
-        window.AudioContext || window.webkitAudioContext
-          ? new (window.AudioContext || window.webkitAudioContext)()
-          : null;
-
-      // Decide on some parameters
-      let allowBackgroundPlayback = false; // default false, recommended false
-      let forceIOSBehavior = false; // default false, recommended false
-      // Pass it to unmute if the context exists... ie WebAudio is supported
-      if (context) {
-        // If you need to be able to disable unmute at a later time, you can use the returned handle's dispose() method
-        // if you don't need to do that (most folks won't) then you can simply ignore the return value
-        let unmuteHandle = window.unmute(
-          context,
-          allowBackgroundPlayback,
-          forceIOSBehavior
-        );
-
-        // ... at some later point you wish to STOP unmute control
-        unmuteHandle.dispose();
-        unmuteHandle = null;
-      }
-    }, 300);
-  }, []);
+  const [showWarning, setShowWarning] = useState(true);
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
+      {showWarning && (
+        <div className="mute-warning">
+          <p>Make sure your phone is not on mute to hear the guitar audio</p>
+          <button
+            className="mute-warning-button"
+            onClick={() => setShowWarning(false)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       {!start ? (
         <div className="start-overlay">
           <h2>Welcome To Strum Space!</h2>
@@ -190,9 +175,12 @@ function App({ ...props }) {
         className="lock-button"
         onClick={() => setLock((prevState) => !prevState)}
       >
-        {!lock ? "Adjust Guitar Position" : "Lock Guitar Position"}
+        {!lock ? (
+          <FontAwesomeIcon icon={faUnlock} />
+        ) : (
+          <FontAwesomeIcon icon={faLock} />
+        )}
       </button>
-
       <Canvas
         camera={{ position: matches ? [-200, 80, -90] : [-200, 80, -180] }}
       >
