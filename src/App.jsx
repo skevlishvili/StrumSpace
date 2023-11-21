@@ -52,29 +52,21 @@ const vertexShader = `
    
    `;
 
-function GuitarString({ position, length = 290, audioPath }) {
-  const [hovered, set] = useState();
-
-  const [audioContext, setAudioContext] = useState(null);
+function GuitarString({ position, length = 290, audioPath, audioContext }) {
+  const [hovered, set] = useState(false);
   const [buffer, setBuffer] = useState(null);
-
   const matches = useMediaQuery("(min-width: 900px)");
 
-  const initializeAudioContext = async () => {
-    var AudioContext = window.AudioContext || window.webkitAudioContext;
-    const context = new AudioContext();
-
-    setAudioContext(context);
-
-    try {
-      const response = await fetch(audioPath);
-      const arrayBuffer = await response.arrayBuffer();
-      const decodedBuffer = await context.decodeAudioData(arrayBuffer);
-      setBuffer(decodedBuffer);
-    } catch (error) {
-      console.error("Error loading audio:", error);
+  useEffect(() => {
+    if (audioContext) {
+      fetch(audioPath)
+        .then((response) => response.arrayBuffer())
+        .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+        .then((decodedBuffer) => {
+          setBuffer(decodedBuffer);
+        });
     }
-  };
+  }, [audioContext, audioPath]);
 
   const playSound = () => {
     if (audioContext && buffer) {
@@ -97,54 +89,6 @@ function GuitarString({ position, length = 290, audioPath }) {
 
     playSound();
   };
-
-  useEffect(() => {
-    var ctx = null,
-      usingWebAudio = true;
-
-    try {
-      if (typeof AudioContext !== "undefined") {
-        ctx = new AudioContext();
-      } else if (typeof webkitAudioContext !== "undefined") {
-        ctx = new webkitAudioContext();
-      } else {
-        usingWebAudio = false;
-      }
-    } catch (e) {
-      usingWebAudio = false;
-    }
-
-    // context state at this time is `undefined` in iOS8 Safari
-    if (usingWebAudio && ctx.state === "suspended") {
-      var resume = function () {
-        ctx.resume();
-
-        setTimeout(function () {
-          if (ctx.state === "running") {
-            document.body.removeEventListener("touchend", resume, false);
-          }
-        }, 0);
-      };
-
-      document.body.addEventListener("touchend", resume, false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const context = new AudioContext();
-    setAudioContext(context);
-
-    fetch(audioPath)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
-      .then((decodedBuffer) => {
-        setBuffer(decodedBuffer);
-      });
-
-    return () => {
-      context.close();
-    };
-  }, []);
 
   useCursor(hovered /*'pointer', 'auto', document.body*/);
 
@@ -213,21 +157,26 @@ function App({ ...props }) {
   const { nodes, materials } = useSpline(
     "https://prod.spline.design/GgV1zfjUc9luRxVu/scene.splinecode"
   );
-
   const matches = useMediaQuery("(min-width: 900px)");
 
   const [start, setStart] = useState(false);
   const [lock, setLock] = useState(false);
+  const [audioContext, setAudioContext] = useState(null);
+
+  const handleStart = () => {
+    setStart(true);
+
+    // Initialize AudioContext on user interaction
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    setAudioContext(context);
+  };
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {!start ? (
         <div className="start-overlay">
           <h2>Welcome To Strum Space!</h2>
-          <button
-            className="start-overlay-button"
-            onClick={() => setStart((prevState) => !prevState)}
-          >
+          <button className="start-overlay-button" onClick={handleStart}>
             Start Playing
           </button>
         </div>
@@ -252,31 +201,37 @@ function App({ ...props }) {
             position={[-22, -5, 25]}
             length={298}
             audioPath="1st_e.mp3"
+            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, -3, 30]}
             length={308}
             audioPath="2nd_B.mp3"
+            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, -1, 35]}
             length={310}
             audioPath="3rd_G.mp3"
+            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 1, 35]}
             length={310}
             audioPath="4th_D.mp3"
+            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 3, 30]}
             length={308}
             audioPath="5th_A.mp3"
+            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 5, 25]}
             length={298}
             audioPath="6th_E.mp3"
+            audioContext={audioContext}
           />
 
           <group {...props} dispose={null}>
