@@ -25,3 +25,23 @@
   background: #f2f2f2;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2);
 }
+
+.lock-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  color: #ffffffb3;
+  border: 3px solid #ffffffb3;
+  margin: 10px;
+  background: #ffffff08;
+  opacity: 1;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: absolute;
+  cursor: pointer;
+  padding: 20px;
+  right: 0;
+  z-index: 2;
+}

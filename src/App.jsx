@@ -4,6 +4,7 @@ import { CameraControls, Outlines, Edges, useCursor } from "@react-three/drei";
 import useSpline from "@splinetool/r3f-spline";
 import * as THREE from "three";
 import "./main.css";
+import { useMediaQuery } from "usehooks-ts";
 
 const fragmentShader = `
 varying vec2 vUv;
@@ -145,7 +146,10 @@ function App({ ...props }) {
     "https://prod.spline.design/GgV1zfjUc9luRxVu/scene.splinecode"
   );
 
+  const matches = useMediaQuery("(min-width: 900px)");
+
   const [start, setStart] = useState(false);
+  const [lock, setLock] = useState(false);
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -160,101 +164,113 @@ function App({ ...props }) {
           </button>
         </div>
       ) : null}
-      <Canvas camera={{ position: [-200, 80, -90] }}>
+
+      <button
+        className="lock-button"
+        onClick={() => setLock((prevState) => !prevState)}
+      >
+        {!lock ? "Adjust Guitar Position" : "Lock Guitar Position"}
+      </button>
+
+      <Canvas
+        camera={{ position: matches ? [-200, 80, -90] : [-200, 80, -180] }}
+      >
         <color attach="background" args={["#FFCC70"]} />
 
-        <CameraControls />
+        <CameraControls enabled={lock} />
 
-        <GuitarString
-          position={[-22, -5, 25]}
-          length={298}
-          audioPath="1st_e.mp3"
-        />
-        <GuitarString
-          position={[-22, -3, 30]}
-          length={308}
-          audioPath="2nd_B.mp3"
-        />
-        <GuitarString
-          position={[-22, -1, 35]}
-          length={310}
-          audioPath="3rd_G.mp3"
-        />
-        <GuitarString
-          position={[-22, 1, 35]}
-          length={310}
-          audioPath="4th_D.mp3"
-        />
-        <GuitarString
-          position={[-22, 3, 30]}
-          length={308}
-          audioPath="5th_A.mp3"
-        />
-        <GuitarString
-          position={[-22, 5, 25]}
-          length={298}
-          audioPath="6th_E.mp3"
-        />
+        <group rotation={matches ? [0, 0, 0] : [-0.9, 0.2, -0.4]}>
+          <GuitarString
+            position={[-22, -5, 25]}
+            length={298}
+            audioPath="1st_e.mp3"
+          />
+          <GuitarString
+            position={[-22, -3, 30]}
+            length={308}
+            audioPath="2nd_B.mp3"
+          />
+          <GuitarString
+            position={[-22, -1, 35]}
+            length={310}
+            audioPath="3rd_G.mp3"
+          />
+          <GuitarString
+            position={[-22, 1, 35]}
+            length={310}
+            audioPath="4th_D.mp3"
+          />
+          <GuitarString
+            position={[-22, 3, 30]}
+            length={308}
+            audioPath="5th_A.mp3"
+          />
+          <GuitarString
+            position={[-22, 5, 25]}
+            length={298}
+            audioPath="6th_E.mp3"
+          />
 
-        <group {...props} dispose={null}>
-          <scene name="Scene 1">
-            <mesh
-              name="Guitar"
-              geometry={nodes.Guitar.geometry}
-              material={materials["Guitar Material"]}
-              castShadow
-              receiveShadow
-              position={[-3.53, 0, 36.22]}
-            >
-              <meshToonMaterial
-                color="orange"
-                transparent
+          <group {...props} dispose={null}>
+            <scene name="Scene 1">
+              <mesh
+                name="Guitar"
+                geometry={nodes.Guitar.geometry}
+                material={materials["Guitar Material"]}
                 castShadow
                 receiveShadow
-                side={THREE.DoubleSide}
+                position={[-3.53, 0, 36.22]}
+              >
+                <meshToonMaterial
+                  color="orange"
+                  transparent
+                  castShadow
+                  receiveShadow
+                  side={THREE.DoubleSide}
+                />
+
+                <Outlines thickness={0.8} color="black" />
+
+                <Edges scale={1} threshold={15} color="black" />
+              </mesh>
+
+              <spotLight
+                name="Spot Light"
+                castShadow
+                intensity={1}
+                angle={Math.PI / 6}
+                distance={2000}
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+                shadow-camera-fov={119.99999999999999}
+                shadow-camera-near={100}
+                shadow-camera-far={100000}
+                position={[107, 446.51, -43]}
+              ></spotLight>
+              <directionalLight
+                name="Directional Light"
+                castShadow
+                intensity={0.7}
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+                shadow-camera-near={-10000}
+                shadow-camera-far={100000}
+                shadow-camera-left={-1000}
+                shadow-camera-right={1000}
+                shadow-camera-top={1000}
+                shadow-camera-bottom={-1000}
+                position={[200, 300, 300]}
               />
 
-              <Outlines thickness={0.8} color="black" />
-
-              <Edges scale={1} threshold={15} color="black" />
-            </mesh>
-
-            <spotLight
-              name="Spot Light"
-              castShadow
-              intensity={1}
-              angle={Math.PI / 6}
-              distance={2000}
-              shadow-mapSize-width={1024}
-              shadow-mapSize-height={1024}
-              shadow-camera-fov={119.99999999999999}
-              shadow-camera-near={100}
-              shadow-camera-far={100000}
-              position={[107, 446.51, -43]}
-            ></spotLight>
-            <directionalLight
-              name="Directional Light"
-              castShadow
-              intensity={0.7}
-              shadow-mapSize-width={1024}
-              shadow-mapSize-height={1024}
-              shadow-camera-near={-10000}
-              shadow-camera-far={100000}
-              shadow-camera-left={-1000}
-              shadow-camera-right={1000}
-              shadow-camera-top={1000}
-              shadow-camera-bottom={-1000}
-              position={[200, 300, 300]}
-            />
-
-            {/* <OrthographicCamera
+              {/* <OrthographicCamera
               name="1"
               makeDefault={true}
               far={10000}
               near={-50000}
             /> */}
-            <hemisphereLight name="Default Ambient Light" intensity={0.75} />
-          </scene>
+              <hemisphereLight name="Default Ambient Light" intensity={0.75} />
+            </scene>
+          </group>
         </group>
       </Canvas>
     </div>
