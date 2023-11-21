@@ -163,11 +163,25 @@ function App({ ...props }) {
   const [lock, setLock] = useState(false);
   const [audioContext, setAudioContext] = useState(null);
 
+  function unlockAudioContext(audioCtx) {
+    if (audioCtx.state !== "suspended") return;
+    const b = document.body;
+    const events = ["touchstart", "touchend", "mousedown", "keydown"];
+    events.forEach((e) => b.addEventListener(e, unlock, false));
+    function unlock() {
+      audioCtx.resume().then(clean);
+    }
+    function clean() {
+      events.forEach((e) => b.removeEventListener(e, unlock));
+    }
+  }
+
   const handleStart = () => {
     setStart(true);
 
     // Initialize AudioContext on user interaction
     const context = new (window.AudioContext || window.webkitAudioContext)();
+    unlockAudioContext(context);
     setAudioContext(context);
   };
 
