@@ -176,9 +176,9 @@ function App({ ...props }) {
         onClick={() => setLock((prevState) => !prevState)}
       >
         {!lock ? (
-          <FontAwesomeIcon icon={faUnlock} />
-        ) : (
           <FontAwesomeIcon icon={faLock} />
+        ) : (
+          <FontAwesomeIcon icon={faUnlock} />
         )}
       </button>
       <Canvas
@@ -271,12 +271,6 @@ function App({ ...props }) {
                 position={[200, 300, 300]}
               />
 
-              {/* <OrthographicCamera
-              name="1"
-              makeDefault={true}
-              far={10000}
-              near={-50000}
-            /> */}
               <hemisphereLight name="Default Ambient Light" intensity={0.75} />
             </scene>
           </group>
