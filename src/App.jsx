@@ -61,7 +61,9 @@ function GuitarString({ position, length = 290, audioPath }) {
   const matches = useMediaQuery("(min-width: 900px)");
 
   const initializeAudioContext = async () => {
-    const context = new (window.AudioContext || window.webkitAudioContext)();
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    const context = new AudioContext();
+
     setAudioContext(context);
 
     try {
