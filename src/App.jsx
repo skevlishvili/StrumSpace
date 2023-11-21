@@ -142,6 +142,15 @@ function App({ ...props }) {
   const [start, setStart] = useState(false);
   const [lock, setLock] = useState(false);
 
+  useEffect(() => {
+    // Check if the unmute function is available
+    setTimeout(() => {
+      if (window.unmute) {
+        window.unmute();
+      }
+    }, 300);
+  }, []);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {!start ? (
