@@ -27,13 +27,15 @@ const vertexShader = `
    uniform float time;
    uniform float amplitude;
    varying vec2 vUv;
+   uniform float intensityScalar;
+   uniform float waveLength;
 
    void main() {
     vUv = uv;
 
 
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-    modelPosition.y += sin(modelPosition.z * 4.0 + time * 20.0) * amplitude * 0.2;
+    modelPosition.y += sin(modelPosition.z * waveLength + time * 20.0) * amplitude * intensityScalar;
     
     
     
@@ -56,6 +58,8 @@ function GuitarString({ position, length = 290, audioPath }) {
   const [audioContext, setAudioContext] = useState(null);
   const [buffer, setBuffer] = useState(null);
 
+  const matches = useMediaQuery("(min-width: 900px)");
+
   useEffect(() => {
     const context = new AudioContext();
     setAudioContext(context);
@@ -76,6 +80,12 @@ function GuitarString({ position, length = 290, audioPath }) {
 
   const uniforms = useMemo(
     () => ({
+      waveLength: {
+        value: 0.0,
+      },
+      intensityScalar: {
+        value: 0.0,
+      },
       time: {
         value: 0.0,
       },
@@ -93,6 +103,14 @@ function GuitarString({ position, length = 290, audioPath }) {
       setAmplitude(1);
     } else if (amplitude > 0) {
       setAmplitude((prev) => Math.max(prev - 0.015, 0));
+    }
+
+    if (matches) {
+      uniforms.intensityScalar.value = 0.5;
+      uniforms.waveLength.value = 4.0;
+    } else {
+      uniforms.intensityScalar.value = 2.4;
+      uniforms.waveLength.value = 6.0;
     }
 
     uniforms.amplitude.value = amplitude;
