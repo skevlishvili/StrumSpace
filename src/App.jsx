@@ -63,6 +63,7 @@ function GuitarString({ position, length = 290, audioPath, audioContext }) {
   const sound = new Howl({
     src: [audioPath],
     preload: true,
+    html5: true,
   });
 
   const handleInteraction = () => {
