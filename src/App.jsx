@@ -60,6 +60,42 @@ function GuitarString({ position, length = 290, audioPath }) {
 
   const matches = useMediaQuery("(min-width: 900px)");
 
+  const initializeAudioContext = async () => {
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    setAudioContext(context);
+
+    try {
+      const response = await fetch(audioPath);
+      const arrayBuffer = await response.arrayBuffer();
+      const decodedBuffer = await context.decodeAudioData(arrayBuffer);
+      setBuffer(decodedBuffer);
+    } catch (error) {
+      console.error("Error loading audio:", error);
+    }
+  };
+
+  const playSound = () => {
+    if (audioContext && buffer) {
+      const source = audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioContext.destination);
+      source.start(0);
+    }
+  };
+
+  const handleInteraction = async () => {
+    set(true);
+
+    // Initialize or resume AudioContext on interaction
+    if (!audioContext) {
+      await initializeAudioContext();
+    } else if (audioContext.state === "suspended") {
+      await audioContext.resume();
+    }
+
+    playSound();
+  };
+
   useEffect(() => {
     const context = new AudioContext();
     setAudioContext(context);
@@ -117,20 +153,6 @@ function GuitarString({ position, length = 290, audioPath }) {
     uniforms.time.value = clock.getElapsedTime();
   });
 
-  const playSound = () => {
-    if (audioContext && buffer) {
-      const source = audioContext.createBufferSource();
-      source.buffer = buffer;
-      source.connect(audioContext.destination);
-      source.start(0);
-    }
-  };
-
-  const handleInteraction = () => {
-    set(true);
-    playSound();
-  };
-
   const handleEndInteraction = () => {
     set(false);
   };
@@ -139,12 +161,10 @@ function GuitarString({ position, length = 290, audioPath }) {
     <mesh
       position={position}
       rotation={[0, 0.03, 0]}
-      onPointerOver={() => {
-        set(true), playSound();
-      }}
+      onPointerOver={handleInteraction}
       onPointerOut={() => set(false)}
       onTouchStart={handleInteraction}
-      onTouchEnd={handleEndInteraction}
+      onTouchEnd={() => set(false)}
     >
       <boxGeometry args={[0.2, 0.8, length, 10, 10, 300]} />
 
