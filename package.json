@@ -16,6 +16,7 @@
     "@splinetool/loader": "^0.9.506",
     "@splinetool/r3f-spline": "^1.0.2",
     "@types/three": "^0.158.2",
+    "howler": "^2.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.158.0",

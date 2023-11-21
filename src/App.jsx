@@ -6,6 +6,8 @@ import * as THREE from "three";
 import "./main.css";
 import { useMediaQuery } from "usehooks-ts";
 
+import { Howl, Howler } from "howler";
+
 const fragmentShader = `
 varying vec2 vUv;
 
@@ -57,37 +59,15 @@ function GuitarString({ position, length = 290, audioPath, audioContext }) {
   const [buffer, setBuffer] = useState(null);
   const matches = useMediaQuery("(min-width: 900px)");
 
-  useEffect(() => {
-    if (audioContext) {
-      fetch(audioPath)
-        .then((response) => response.arrayBuffer())
-        .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
-        .then((decodedBuffer) => {
-          setBuffer(decodedBuffer);
-        });
-    }
-  }, [audioContext, audioPath]);
+  // Howler sound instance
+  const sound = new Howl({
+    src: [audioPath],
+    preload: true,
+  });
 
-  const playSound = () => {
-    if (audioContext && buffer) {
-      const source = audioContext.createBufferSource();
-      source.buffer = buffer;
-      source.connect(audioContext.destination);
-      source.start(0);
-    }
-  };
-
-  const handleInteraction = async () => {
+  const handleInteraction = () => {
     set(true);
-
-    // Initialize or resume AudioContext on interaction
-    if (!audioContext) {
-      await initializeAudioContext();
-    } else if (audioContext.state === "suspended") {
-      await audioContext.resume();
-    }
-
-    playSound();
+    sound.play();
   };
 
   useCursor(hovered /*'pointer', 'auto', document.body*/);
@@ -161,36 +141,16 @@ function App({ ...props }) {
 
   const [start, setStart] = useState(false);
   const [lock, setLock] = useState(false);
-  const [audioContext, setAudioContext] = useState(null);
-
-  function unlockAudioContext(audioCtx) {
-    if (audioCtx.state !== "suspended") return;
-    const b = document.body;
-    const events = ["touchstart", "touchend", "mousedown", "keydown"];
-    events.forEach((e) => b.addEventListener(e, unlock, false));
-    function unlock() {
-      audioCtx.resume().then(clean);
-    }
-    function clean() {
-      events.forEach((e) => b.removeEventListener(e, unlock));
-    }
-  }
-
-  const handleStart = () => {
-    setStart(true);
-
-    // Initialize AudioContext on user interaction
-    const context = new (window.AudioContext || window.webkitAudioContext)();
-    unlockAudioContext(context);
-    setAudioContext(context);
-  };
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {!start ? (
         <div className="start-overlay">
           <h2>Welcome To Strum Space!</h2>
-          <button className="start-overlay-button" onClick={handleStart}>
+          <button
+            className="start-overlay-button"
+            onClick={() => setStart(true)}
+          >
             Start Playing
           </button>
         </div>
@@ -215,37 +175,31 @@ function App({ ...props }) {
             position={[-22, -5, 25]}
             length={298}
             audioPath="1st_e.mp3"
-            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, -3, 30]}
             length={308}
             audioPath="2nd_B.mp3"
-            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, -1, 35]}
             length={310}
             audioPath="3rd_G.mp3"
-            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 1, 35]}
             length={310}
             audioPath="4th_D.mp3"
-            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 3, 30]}
             length={308}
             audioPath="5th_A.mp3"
-            audioContext={audioContext}
           />
           <GuitarString
             position={[-22, 5, 25]}
             length={298}
             audioPath="6th_E.mp3"
-            audioContext={audioContext}
           />
 
           <group {...props} dispose={null}>
